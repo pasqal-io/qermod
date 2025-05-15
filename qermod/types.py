@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Union
 
 from pyqtorch.noise import DigitalNoiseType as DigitalNoise
-from qadence.types import StrEnum
+from qadence_commons import StrEnum
 
 
 class AnalogNoise(StrEnum):

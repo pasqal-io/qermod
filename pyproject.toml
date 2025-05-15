@@ -26,7 +26,7 @@ classifiers=[
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-    "qadence==1.11.3",
+    "qadence-commons",
 ]
 
 

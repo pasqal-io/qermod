@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+
 from qermod import NoiseHandler, NoiseProtocol
 
 list_noises = [noise for noise in NoiseProtocol.DIGITAL]

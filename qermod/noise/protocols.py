@@ -3,7 +3,7 @@ from __future__ import annotations
 from itertools import compress
 from typing import Any
 
-from qadence.types import NoiseEnum, NoiseProtocol
+from qermod.types import NoiseEnum, NoiseProtocol
 
 
 class NoiseHandler:
@@ -21,7 +21,7 @@ class NoiseHandler:
 
     Examples:
     ```
-        from qadence import NoiseProtocol, NoiseHandler
+        from qermod import NoiseProtocol, NoiseHandler
 
         analog_options = {"noise_probs": 0.1}
         digital_options = {"error_probability": 0.1}

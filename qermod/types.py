@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Union
 
-from dataclasses import dataclass
 from pyqtorch.noise import DigitalNoiseType as DigitalNoise
 from qadence.types import StrEnum
+
 
 class AnalogNoise(StrEnum):
     """Type of noise protocol."""

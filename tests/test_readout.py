@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import pytest
-from qermod import NoiseHandler, NoiseProtocol
 import torch
+
+from qermod import NoiseHandler, NoiseProtocol
+
 
 def test_serialization() -> None:
     noise = NoiseHandler(protocol=NoiseProtocol.READOUT.INDEPENDENT)

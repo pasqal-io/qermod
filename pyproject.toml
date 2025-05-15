@@ -31,7 +31,7 @@ dependencies = [
 
 
 [project.optional-dependencies]
-dev = ["black", "pytest", "pytest-xdist", "pytest-cov", "flake8", "mypy", "pre-commit", "ruff", "hypothesis", "pytest-benchmark[histogram]"]
+dev = ["black", "pytest", "pytest-xdist", "pytest-cov", "flake8", "mypy", "pre-commit", "ruff"]
 
 [tool.hatch.envs.default]
 installer = "uv"
@@ -43,13 +43,7 @@ features = [
 ]
 
 [tool.hatch.envs.tests.scripts]
-test = "pytest -n auto --ignore=tests/timings/ {args}"
-benchmarks = "pytest --benchmark-disable-gc --benchmark-json docs/stats.json -v -s tests/timings/test_timings.py"
-vqe = "pytest --benchmark-disable-gc --benchmark-json docs/stats_vqe_noshots.json -v -s tests/timings/vqe/test_noshots.py"
-vqeshots = "pytest --benchmark-disable-gc --benchmark-json docs/stats_vqe_shots.json -v -s tests/timings/vqe/test_shots.py"
-dqc = "pytest --benchmark-disable-gc --benchmark-json docs/stats_dqc.json -v -s tests/timings/dqc/test_pde_noshots.py"
-dqcshots = "pytest --benchmark-disable-gc --benchmark-json docs/stats_dqc_shots.json -v -s tests/timings/dqc/test_pde_shots.py"
-
+test = "pytest -n auto {args}"
 
 [tool.hatch.envs.docs]
 installer = "uv"
@@ -63,8 +57,6 @@ dependencies = [
   "mkdocs-exclude",
   "markdown-exec",
   "mike",
-  "matplotlib",
-  "pandas",
 ]
 
 [tool.hatch.build.targets.wheel]

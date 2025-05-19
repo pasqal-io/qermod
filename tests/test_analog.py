@@ -2,8 +2,6 @@ from __future__ import annotations
 
 import pytest
 import torch
-
-from qermod import NoiseHandler, NoiseProtocol
 from qadence import DiffMode, QuantumModel
 from qadence.backends import backend_factory
 from qadence.blocks import chain
@@ -11,13 +9,14 @@ from qadence.circuit import QuantumCircuit
 from qadence.operations import AnalogRX, AnalogRZ, Z
 from qadence.types import PI, BackendName
 
-@pytest.mark.xfail(
-    reason="Should fix type checking with qermod."
-)
+from qermod import NoiseHandler, NoiseProtocol
+
+
+@pytest.mark.xfail(reason="Should fix type checking with qermod.")
 def test_batched_noisy_simulations() -> None:
-    noiseless_pulser_sim= torch.tensor([[0.3597]])
+    noiseless_pulser_sim = torch.tensor([[0.3597]])
     batched_noisy_pulser_sim = torch.tensor([[0.4160, 0.4356, 0.4548, 0.4737]])
-    
+
     analog_block = chain(AnalogRX(PI / 2.0), AnalogRZ(PI))
     observable = [Z(0) + Z(1)]
     circuit = QuantumCircuit(2, analog_block)

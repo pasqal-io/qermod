@@ -114,7 +114,8 @@ For `NoiseProtocol.READOUT.CORRELATED`, the `option` dictionary argument accepts
 - `seed`: defaulted to `None`, for reproducibility purposes
 
 
-Noisy simulations go hand-in-hand with measurement protocols discussed in the [measurements section](measurements.md), to assess the impact of noise on expectation values. In this case, both measurement and noise protocols have to be defined appropriately. Please note that a noise protocol without a measurement protocol will be ignored for expectation values computations.
+Noisy simulations go hand-in-hand with measurement protocols discussed in the [Qadence measurements section](https://pasqal-io.github.io/qadence/latest/tutorials/realistic_sims/measurements/),
+to assess the impact of noise on expectation values. In this case, both measurement and noise protocols have to be defined appropriately. Please note that a noise protocol without a measurement protocol will be ignored for expectation values computations.
 
 
 ```python exec="on" source="material-block" session="noise" result="json"

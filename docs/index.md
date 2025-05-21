@@ -1,7 +1,7 @@
 # `Qermod`
 
 Running programs on NISQ devices often leads to partially useful results due to the presence of noise.
-In order to perform realistic simulations, a number of noise models are defined in `Qermod` (for digital operations, analog operations and simulated readout errors) are supported in `Qadence` through their implementation in backends and
+In order to perform realistic simulations, a number of noise models are defined in `Qermod` (for digital or analog operations and simulated readout errors) are supported in `Qadence` through their implementation in backends and
 corresponding error mitigation techniques whenever possible.
 
 # NoiseHandler

@@ -7,7 +7,7 @@ corresponding error mitigation techniques whenever possible.
 # NoiseHandler
 
 Noise models can be defined via the `NoiseHandler`. It is a container of several noise instances which require to specify a `protocols` and
-a dictionary of `options` (or lists). The `protocol` field is to be instantiated from `NoiseProtocol`.
+a dictionary of `options` (or lists). The `protocol` field is to be instantiated from a `NoiseProtocol` type.
 
 ```python exec="on" source="material-block" session="noise" result="json"
 from qermod import NoiseHandler, NoiseProtocol

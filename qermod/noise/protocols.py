@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from itertools import compress
-from typing import Any
+from typing import Any, Union
 
 import torch
 from pydantic import BaseModel, ConfigDict, model_validator
@@ -11,6 +11,8 @@ from qermod.types import NoiseCategory, NoiseCategoryEnum
 
 # to handle torch Tensor
 BaseModel.model_config["arbitrary_types_allowed"] = True
+
+ERROR_TYPE = Union[float, list[float], torch.Tensor]
 
 
 class NoiseInstance(BaseModel):
@@ -23,7 +25,7 @@ class NoiseInstance(BaseModel):
     """
 
     protocol: NoiseCategoryEnum
-    error_rate: float | list[float] | torch.Tensor
+    error_rate: ERROR_TYPE
     seed: int | None = None
     noise_distribution: WhiteNoise | None = None
     model_config = ConfigDict(extra="forbid")

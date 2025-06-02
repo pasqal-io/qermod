@@ -15,15 +15,16 @@ def test_noise_instance_model_validation() -> None:
 
 
 def test_error_append() -> None:
+    noise = Noise(configs=[NoiseInstance(protocol=NoiseCategory.ANALOG.DEPHASING, error_rate=0.1)])
     with pytest.raises(ValueError):
-        noise = Noise(
-            configs=[NoiseInstance(protocol=NoiseCategory.ANALOG.DEPHASING, error_rate=0.1)]
-        )
+
         noise.append(
             Noise(
                 configs=[NoiseInstance(protocol=NoiseCategory.ANALOG.DEPOLARIZING, error_rate=0.1)]
             )
         )
+    with pytest.raises(ValueError):
+        noise.digital_depolarizing(error_rate=0.1)
 
 
 def test_equality() -> None:

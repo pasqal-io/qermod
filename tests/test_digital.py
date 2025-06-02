@@ -32,6 +32,9 @@ def test_append(noise_config: list[NoiseCategory]) -> None:
 
     assert len(noise.configs) == (len_noise_config + 1)
 
+    with pytest.raises(ValueError):
+        noise.analog_depolarizing(error_rate=0.1)
+
 
 def test_equality() -> None:
     noise = Noise(configs=[NoiseInstance(protocol=NoiseCategory.DIGITAL.BITFLIP, error_rate=0.1)])

@@ -3,204 +3,242 @@ from __future__ import annotations
 from itertools import compress
 from typing import Any
 
-from qermod.types import NoiseEnum, NoiseProtocol
+import torch
+from pydantic import BaseModel, ConfigDict, model_validator
+from pyqtorch.noise.readout import WhiteNoise
+
+from qermod.types import NoiseCategory, NoiseCategoryEnum
+
+# to handle torch Tensor
+BaseModel.model_config["arbitrary_types_allowed"] = True
 
 
-class NoiseHandler:
-    """A container for multiple sources of noise.
-
-    Note `NoiseProtocol.ANALOG` and `NoiseProtocol.DIGITAL` sources cannot be both present.
-    Also `NoiseProtocol.READOUT` can only be present once as the last noise sources, and only
-    exclusively with `NoiseProtocol.DIGITAL` sources.
+class NoiseInstance(BaseModel):
+    """A container for one source of noise.
 
     Args:
-        protocol: The protocol(s) applied. To be defined from `NoiseProtocol`.
-        options: A list of options defining the protocol.
-            For `NoiseProtocol.ANALOG`, options should contain a field `noise_probs`.
-            For `NoiseProtocol.DIGITAL`, options should contain a field `error_probability`.
+        protocol (NoiseCategoryEnum): Type of noise protocol.
+        error_rate ()
+
+    """
+
+    protocol: NoiseCategoryEnum
+    error_rate: float | list[float] | torch.Tensor
+    seed: int | None = None
+    noise_distribution: WhiteNoise | None = None
+    model_config = ConfigDict(extra="forbid")
+
+    @model_validator(mode="after")
+    def _check_consistency(self) -> NoiseInstance:
+        rates = [self.error_rate] if isinstance(self.error_rate, float) else self.error_rate
+        if isinstance(rates, torch.Tensor):
+            if (rates < 0).any() or (rates > 1.0).any():
+                raise ValueError("`error_rate` can only be defined on [0,1]")
+        else:
+            for p in rates:
+                if p < 0 or p > 1.0:
+                    raise ValueError("`error_rate` can only be defined on [0,1]")
+        if self.protocol not in NoiseCategory.READOUT.list():
+            if self.noise_distribution is not None or self.seed is not None:
+                raise ValueError(
+                    "`noise_distribution` and `seed` can only be set for READOUT noise."
+                )
+        return self
+
+    def __repr__(self) -> str:
+        options: dict = {"error_rate": self.error_rate}
+        if self.protocol in NoiseCategory.READOUT.list():
+            options = options | {
+                "noise_distribution": self.noise_distribution,
+                "seed": self.seed,
+                "confusion_matrix": self.confusion_matrix,
+            }
+        return f"NoiseInstance({self.protocol}, {str(options)})"
+
+
+class Noise(BaseModel):
+    """A container for multiple sources of noise.
+
+    Note `NoiseCategory.ANALOG` and `NoiseCategory.DIGITAL` sources cannot be both present.
+    Also `NoiseCategory.READOUT` can only be present once as the last noise sources, and only
+    exclusively with `NoiseCategory.DIGITAL` sources.
+
+    Args:
+        configs: The config(s) applied. To be defined as a list of `NoiseInstance`.
 
     Examples:
     ```
-        from qermod import NoiseProtocol, NoiseHandler
+        from qermod import NoiseCategory, Noise, NoiseInstance
 
-        analog_options = {"noise_probs": 0.1}
+        analog_options = {"error_probability": 0.1}
         digital_options = {"error_probability": 0.1}
         readout_options = {"error_probability": 0.1, "seed": 0}
 
         # single noise sources
-        analog_noise = NoiseHandler(NoiseProtocol.ANALOG.DEPOLARIZING, analog_options)
-        digital_depo_noise = NoiseHandler(NoiseProtocol.DIGITAL.DEPOLARIZING, digital_options)
-        readout_noise = NoiseHandler(NoiseProtocol.READOUT, readout_options)
+        analog_noise = Noise(configs=[NoiseInstance(protocol=NoiseCategory.ANALOG.DEPOLARIZING,
+            **analog_options)])
+        digital_depo_noise = Noise(configs=[NoiseInstance(protocol=NoiseCategory.DIGITAL.DEPOLARIZING,
+            **digital_options)])
+        readout_noise = Noise(configs=[NoiseInstance(protocol=NoiseCategory.READOUT, **readout_options)])
 
         # init from multiple sources
-        protocols: list = [NoiseProtocol.DIGITAL.DEPOLARIZING, NoiseProtocol.READOUT]
+        protocols: list = [NoiseCategory.DIGITAL.DEPOLARIZING, NoiseCategory.READOUT]
         options: list = [digital_options, readout_noise]
-        noise_combination = NoiseHandler(protocols, options)
+        noise_combination = Noise(configs=[NoiseInstance(protocol=p, **opts) for p, opts zip(protocols, options)])
 
         # Appending noise sources
-        noise_combination = NoiseHandler(NoiseProtocol.DIGITAL.BITFLIP, digital_options)
+        noise_combination = Noise(configs=[NoiseInstance(protocol=NoiseCategory.DIGITAL.BITFLIP, **digital_options)])
         noise_combination.append([digital_depo_noise, readout_noise])
     ```
     """
 
-    def __init__(
-        self,
-        protocol: NoiseEnum | list[NoiseEnum],
-        options: dict | list[dict] = dict(),
-    ) -> None:
-        self.protocol = protocol if isinstance(protocol, list) else [protocol]
-        self.options = options if isinstance(options, list) else [options] * len(self.protocol)
-        self.verify_all_protocols()
+    configs: list[NoiseInstance]
+    model_config = ConfigDict(extra="forbid")
 
-    def _verify_single_protocol(self, protocol: NoiseEnum, option: dict) -> None:
-        if not isinstance(protocol, NoiseProtocol.READOUT):  # type: ignore[arg-type]
-            name_mandatory_option = (
-                "noise_probs" if isinstance(protocol, NoiseProtocol.ANALOG) else "error_probability"
-            )
-            noise_probs = option.get(name_mandatory_option, None)
-            if noise_probs is None:
-                error_txt = f"A `{name_mandatory_option}` option"
-                error_txt += f"should be passed for protocol {protocol}."
-                raise KeyError(error_txt)
-
-    def verify_all_protocols(self) -> None:
+    @model_validator(mode="after")
+    def verify_all_protocols(self) -> Noise:
         """Make sure all protocols are correct in terms and their combination too."""
 
-        if len(self.protocol) == 0:
-            raise ValueError("NoiseHandler should be specified with one valid configuration.")
-
-        if len(self.protocol) != len(self.options):
-            raise ValueError("Specify lists of same length when defining noises.")
-
-        for protocol, option in zip(self.protocol, self.options):
-            self._verify_single_protocol(protocol, option)
-
-        types = [type(p) for p in self.protocol]
+        types = [type(p.protocol) for p in self.configs]
         unique_types = set(types)
-        if NoiseProtocol.DIGITAL in unique_types and NoiseProtocol.ANALOG in unique_types:
+        if NoiseCategory.DIGITAL in unique_types and NoiseCategory.ANALOG in unique_types:
             raise ValueError("Cannot define a config with both Digital and Analog noises.")
 
-        if NoiseProtocol.ANALOG in unique_types:
-            if NoiseProtocol.READOUT in unique_types:
+        if NoiseCategory.ANALOG in unique_types:
+            if NoiseCategory.READOUT in unique_types:
                 raise ValueError("Cannot define a config with both READOUT and Analog noises.")
-            if types.count(NoiseProtocol.ANALOG) > 1:
+            if types.count(NoiseCategory.ANALOG) > 1:
                 raise ValueError("Multiple Analog Noises are not supported yet.")
 
-        if NoiseProtocol.READOUT in unique_types:
+        if NoiseCategory.READOUT in unique_types:
             if (
-                not isinstance(self.protocol[-1], NoiseProtocol.READOUT)
-                or types.count(NoiseProtocol.READOUT) > 1
+                self.configs[-1].protocol not in NoiseCategory.READOUT.list()
+                or types.count(NoiseCategory.READOUT) > 1
             ):
-                raise ValueError("Only define a NoiseHandler with one READOUT as the last Noise.")
+                raise ValueError("Only define a Noise with one READOUT as the last Noise.")
+        return self
 
     def __repr__(self) -> str:
-        return "\n".join(
-            [
-                f"Noise({protocol}, {str(option)})"
-                for protocol, option in zip(self.protocol, self.options)
-            ]
-        )
+        return "\n".join([str(c) for c in self.configs])
 
-    def append(self, other: NoiseHandler | list[NoiseHandler]) -> None:
+    def append(self, other: Noise | list[Noise]) -> None:
         """Append noises.
 
         Args:
-            other (NoiseHandler | list[NoiseHandler]): The noises to add.
+            other (Noise | list[Noise]): The noises to add.
         """
         # To avoid overwriting the noise_sources list if an error is raised, make a copy
         other_list = other if isinstance(other, list) else [other]
-        protocols = self.protocol[:]
-        options = self.options[:]
+        configs = self.configs[:]
 
         for noise in other_list:
-            protocols += noise.protocol
-            options += noise.options
+            configs += noise.configs
 
         # init may raise an error
-        temp_handler = NoiseHandler(protocols, options)
-        # if verify passes, replace protocols and options
-        self.protocol = temp_handler.protocol
-        self.options = temp_handler.options
+        temp_handler = Noise(configs=configs)
+        # if verify passes, replace configs
+        self.configs = temp_handler.configs
 
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, NoiseHandler):
-            raise TypeError(f"Cant compare {type(self)} to {type(other)}")
-        if isinstance(other, type(self)):
-            protocols_equal = all([p1 == p2 for p1, p2 in zip(self.protocol, other.protocol)])
-            options_equal = all([o1 == o2 for o1, o2 in zip(self.options, other.options)])
-            return protocols_equal and options_equal
-
-        return False
-
-    def _to_dict(self) -> dict:
-        return {
-            "protocol": self.protocol,
-            "options": self.options,
-        }
-
-    @classmethod
-    def _from_dict(cls, d: dict | None) -> NoiseHandler | None:
-        if d is not None and d.get("protocol", None):
-            return cls(d["protocol"], d["options"])
-        return None
-
-    @classmethod
-    def list(cls) -> list:
-        return list(filter(lambda el: not el.startswith("__"), dir(cls)))
-
-    def filter(self, protocol: NoiseEnum) -> NoiseHandler | None:
-        protocol_matches: list = [isinstance(p, protocol) for p in self.protocol]  # type: ignore[arg-type]
+    def filter(self, protocol: NoiseCategoryEnum) -> Noise | None:
+        protocol_matches: list = [isinstance(c.protocol, protocol) for c in self.configs]  # type: ignore[arg-type]
 
         # if we have at least a match
         if True in protocol_matches:
-            return NoiseHandler(
-                list(compress(self.protocol, protocol_matches)),
-                list(compress(self.options, protocol_matches)),
+            return Noise(
+                configs=list(compress(self.configs, protocol_matches)),
             )
         return None
 
-    def bitflip(self, *args: Any, **kwargs: Any) -> NoiseHandler:
-        self.append(NoiseHandler(NoiseProtocol.DIGITAL.BITFLIP, *args, **kwargs))
-        return self
-
-    def phaseflip(self, *args: Any, **kwargs: Any) -> NoiseHandler:
-        self.append(NoiseHandler(NoiseProtocol.DIGITAL.PHASEFLIP, *args, **kwargs))
-        return self
-
-    def digital_depolarizing(self, *args: Any, **kwargs: Any) -> NoiseHandler:
-        self.append(NoiseHandler(NoiseProtocol.DIGITAL.DEPOLARIZING, *args, **kwargs))
-        return self
-
-    def pauli_channel(self, *args: Any, **kwargs: Any) -> NoiseHandler:
-        self.append(NoiseHandler(NoiseProtocol.DIGITAL.PAULI_CHANNEL, *args, **kwargs))
-        return self
-
-    def amplitude_damping(self, *args: Any, **kwargs: Any) -> NoiseHandler:
-        self.append(NoiseHandler(NoiseProtocol.DIGITAL.AMPLITUDE_DAMPING, *args, **kwargs))
-        return self
-
-    def phase_damping(self, *args: Any, **kwargs: Any) -> NoiseHandler:
-        self.append(NoiseHandler(NoiseProtocol.DIGITAL.PHASE_DAMPING, *args, **kwargs))
-        return self
-
-    def generalized_amplitude_damping(self, *args: Any, **kwargs: Any) -> NoiseHandler:
+    def bitflip(self, *args: Any, **kwargs: Any) -> Noise:
         self.append(
-            NoiseHandler(NoiseProtocol.DIGITAL.GENERALIZED_AMPLITUDE_DAMPING, *args, **kwargs)
+            Noise(configs=[NoiseInstance(protocol=NoiseCategory.DIGITAL.BITFLIP, *args, **kwargs)])
         )
         return self
 
-    def analog_depolarizing(self, *args: Any, **kwargs: Any) -> NoiseHandler:
-        self.append(NoiseHandler(NoiseProtocol.ANALOG.DEPOLARIZING, *args, **kwargs))
+    def phaseflip(self, *args: Any, **kwargs: Any) -> Noise:
+        self.append(
+            Noise(
+                configs=[NoiseInstance(protocol=NoiseCategory.DIGITAL.PHASEFLIP, *args, **kwargs)]
+            )
+        )
         return self
 
-    def dephasing(self, *args: Any, **kwargs: Any) -> NoiseHandler:
-        self.append(NoiseHandler(NoiseProtocol.ANALOG.DEPHASING, *args, **kwargs))
+    def digital_depolarizing(self, *args: Any, **kwargs: Any) -> Noise:
+        self.append(
+            Noise(
+                configs=[
+                    NoiseInstance(protocol=NoiseCategory.DIGITAL.DEPOLARIZING, *args, **kwargs)
+                ]
+            )
+        )
         return self
 
-    def readout_independent(self, *args: Any, **kwargs: Any) -> NoiseHandler:
-        self.append(NoiseHandler(NoiseProtocol.READOUT.INDEPENDENT, *args, **kwargs))
+    def pauli_channel(self, *args: Any, **kwargs: Any) -> Noise:
+        self.append(
+            Noise(
+                configs=[
+                    NoiseInstance(protocol=NoiseCategory.DIGITAL.PAULI_CHANNEL, *args, **kwargs)
+                ]
+            )
+        )
         return self
 
-    def readout_correlated(self, *args: Any, **kwargs: Any) -> NoiseHandler:
-        self.append(NoiseHandler(NoiseProtocol.READOUT.CORRELATED, *args, **kwargs))
+    def amplitude_damping(self, *args: Any, **kwargs: Any) -> Noise:
+        self.append(
+            Noise(
+                [NoiseInstance(protocol=NoiseCategory.DIGITAL.AMPLITUDE_DAMPING, *args, **kwargs)]
+            )
+        )
+        return self
+
+    def phase_damping(self, *args: Any, **kwargs: Any) -> Noise:
+        self.append(
+            Noise(
+                configs=[
+                    NoiseInstance(protocol=NoiseCategory.DIGITAL.PHASE_DAMPING, *args, **kwargs)
+                ]
+            )
+        )
+        return self
+
+    def generalized_amplitude_damping(self, *args: Any, **kwargs: Any) -> Noise:
+        self.append(
+            Noise(
+                [
+                    NoiseInstance(
+                        NoiseCategory.DIGITAL.GENERALIZED_AMPLITUDE_DAMPING, *args, **kwargs
+                    )
+                ]
+            )
+        )
+        return self
+
+    def analog_depolarizing(self, *args: Any, **kwargs: Any) -> Noise:
+        self.append(
+            Noise(
+                configs=[NoiseInstance(protocol=NoiseCategory.ANALOG.DEPOLARIZING, *args, **kwargs)]
+            )
+        )
+        return self
+
+    def dephasing(self, *args: Any, **kwargs: Any) -> Noise:
+        self.append(
+            Noise(configs=[NoiseInstance(protocol=NoiseCategory.ANALOG.DEPHASING, *args, **kwargs)])
+        )
+        return self
+
+    def readout_independent(self, *args: Any, **kwargs: Any) -> Noise:
+        self.append(
+            Noise(
+                configs=[NoiseInstance(protocol=NoiseCategory.READOUT.INDEPENDENT, *args, **kwargs)]
+            )
+        )
+        return self
+
+    def readout_correlated(self, *args: Any, **kwargs: Any) -> Noise:
+        self.append(
+            Noise(
+                configs=[NoiseInstance(protocol=NoiseCategory.READOUT.CORRELATED, *args, **kwargs)]
+            )
+        )
         return self

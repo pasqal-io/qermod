@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .protocols import NoiseHandler
+from .protocols import Noise, NoiseInstance
 
 # Modules to be automatically added to the namespace
-__all__ = ["NoiseHandler"]
+__all__ = ["Noise", "NoiseInstance"]

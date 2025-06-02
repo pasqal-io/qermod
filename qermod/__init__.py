@@ -1,4 +1,4 @@
 from __future__ import annotations
 
-from .noise import NoiseHandler
-from .types import NoiseProtocol
+from .noise import Noise, NoiseInstance
+from .types import NoiseCategory

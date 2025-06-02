@@ -26,8 +26,8 @@ class NoiseInstance(BaseModel):
 
     protocol: NoiseCategoryEnum
     error_rate: ERROR_TYPE
-    seed: int | None = None
-    noise_distribution: WhiteNoise | None = None
+    seed: Union[int, None] = None
+    noise_distribution: Union[WhiteNoise, None] = None
     model_config = ConfigDict(extra="forbid")
 
     @model_validator(mode="after")

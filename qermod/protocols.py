@@ -75,7 +75,7 @@ class IndependentReadout(PrimitiveNoise):
 
     protocol: NoiseCategoryEnum = Field(default=NoiseCategory.READOUT.INDEPENDENT, frozen=True)
     seed: Optional[int] = None
-    noise_distribution: WhiteNoise | None = None
+    noise_distribution: Optional[WhiteNoise] = None
 
 
 class CorrelatedReadout(PrimitiveNoise):

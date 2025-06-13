@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from .protocols import Noise, NoiseInstance
+from .abstract import AbstractNoise
+from .composite import CompositeNoise
+from .primitive import PrimitiveNoise
+from .utils import chain
 
 # Modules to be automatically added to the namespace
-__all__ = ["Noise", "NoiseInstance"]
+__all__ = ["AbstractNoise", "chain"]

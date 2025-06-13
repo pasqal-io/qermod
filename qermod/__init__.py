@@ -1,4 +1,5 @@
 from __future__ import annotations
 
-from .noise import Noise, NoiseInstance
+from .noise import AbstractNoise, chain
+from .protocols import *
 from .types import NoiseCategory

@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Union
+from typing import Annotated, Union
 
+import torch
+from pydantic import Field
 from pyqtorch.noise import DigitalNoiseType as DigitalNoise
 from qadence_commons import StrEnum
+
+probaType = Annotated[float, Field(strict=True, gt=0, lt=1.0)]
 
 
 class AnalogNoise(StrEnum):
@@ -36,3 +40,4 @@ class NoiseCategory:
 
 
 NoiseCategoryEnum = Union[DigitalNoise, AnalogNoise, ReadoutNoise]
+ERROR_TYPE = Union[probaType, list[probaType], torch.Tensor]

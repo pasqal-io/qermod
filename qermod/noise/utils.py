@@ -3,17 +3,17 @@ from __future__ import annotations
 from logging import getLogger
 from typing import Generator, List, Type, TypeVar, Union
 
-
 from qermod.noise import (
     AbstractNoise,
-    PrimitiveNoise,
     CompositeNoise,
+    PrimitiveNoise,
 )
 
 logger = getLogger(__name__)
 
 TPrimitiveNoise = TypeVar("TPrimitiveNoise", bound=PrimitiveNoise)
 TCompositeNoise = TypeVar("TCompositeNoise", bound=CompositeNoise)
+
 
 def _construct(
     Block: Type[TCompositeNoise],

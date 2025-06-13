@@ -1,11 +1,10 @@
 from __future__ import annotations
 
+from pydantic import model_validator
 
-from rich.tree import Tree
+from qermod.types import NoiseCategory
 
 from .abstract import AbstractNoise
-from pydantic import model_validator
-from qermod.types import NoiseCategory
 
 
 class CompositeNoise(AbstractNoise):
@@ -43,7 +42,7 @@ class CompositeNoise(AbstractNoise):
     def __iter__(self) -> CompositeNoise:
         self._iterator = iter(self.blocks)
         return self
-    
+
     def flatten(self) -> list[AbstractNoise]:
         all_ops = list()
         for b in self.blocks:
@@ -75,7 +74,7 @@ class CompositeNoise(AbstractNoise):
             for b in self.blocks:
                 if isinstance(b, CompositeNoise) and other in b:
                     return True
-                elif type(b) == other:
+                elif type(b) is other:
                     return True
         else:
             raise TypeError(

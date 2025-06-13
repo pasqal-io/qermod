@@ -30,5 +30,38 @@ At the moment, analog noisy simulations are only compatible with the Pulser back
 
 When dealing with programs involving only digital operations, several options are made available from [PyQTorch](https://pasqal-io.github.io/pyqtorch/latest/noise/) via the `NoiseCategory.DIGITAL`.
 
+# Implementation
 
-# Defining noise
+## PrimitiveNoise
+
+A primitive Noise models can be defined via the `PrimitiveNoise`. It contains a noise configuration
+defined by a `NoiseProtocol` type and an `error_definition` argument. Several predefined types are available in `qermod.protocols`.
+
+```python exec="on" source="material-block" session="noise" result="json"
+from qermod import PrimitiveNoise
+from qermod import protocols
+from qadence.types import NoiseProtocol
+
+analog_noise = protocols.AnalogDepolarizing(error_definition=0.1)
+digital_noise = protocols.Bitflip(error_definition=0.1)
+readout_noise = protocols.IndependentReadout(error_definition=0.1)
+
+simple_primitive = PrimitiveNoise(protocol=NoiseProtocol.DIGITAL.BITFLIP, error_definition=0.1)
+```
+
+## Chaining
+
+One can also compose noise configurations via the `chain` method, or by using the `+` or `+=` operator.
+
+```python exec="on" source="material-block" session="noise" result="json"
+from qermod import chain
+
+digital_readout = digital_noise + readout_noise
+print(digital_readout)
+
+digital_readout = chain(digital_noise, readout_noise)
+print(digital_readout)
+```
+
+!!! warning "Noise scope"
+    Note it is not possible to define a noise configuration with both digital and analog noises, both readout and analog noises, several analog noises, several readout noises, or a readout noise that is not the last defined protocol in a sequence.

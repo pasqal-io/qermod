@@ -6,7 +6,6 @@ corresponding error mitigation techniques whenever possible.
 
 # Noise
 
-
 ## Readout errors
 
 State Preparation and Measurement (SPAM) in the hardware is a major source of noise in the execution of
@@ -30,3 +29,6 @@ At the moment, analog noisy simulations are only compatible with the Pulser back
 ## Digital noisy simulation
 
 When dealing with programs involving only digital operations, several options are made available from [PyQTorch](https://pasqal-io.github.io/pyqtorch/latest/noise/) via the `NoiseCategory.DIGITAL`.
+
+
+# Defining noise

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Optional
+
 from pydantic import Field
 from pyqtorch.noise.readout import WhiteNoise
 
@@ -72,7 +74,7 @@ class IndependentReadout(PrimitiveNoise):
     """
 
     protocol: NoiseCategoryEnum = Field(default=NoiseCategory.READOUT.INDEPENDENT, frozen=True)
-    seed: int | None = None
+    seed: Optional[int] = None
     noise_distribution: WhiteNoise | None = None
 
 
@@ -83,4 +85,4 @@ class CorrelatedReadout(PrimitiveNoise):
     """
 
     protocol: NoiseCategoryEnum = Field(default=NoiseCategory.READOUT.CORRELATED, frozen=True)
-    seed: int | None = None
+    seed: Optional[int] = None

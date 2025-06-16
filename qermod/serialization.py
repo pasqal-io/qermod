@@ -1,6 +1,23 @@
 from __future__ import annotations
 
-from qermod.noise import AbstractNoise, PrimitiveNoise, CompositeNoise
+from qermod.noise import AbstractNoise, CompositeNoise
+from qermod.protocols import *
+
+
+TYPE_TO_PROTOCOLS: dict = {
+    "PrimitiveNoise" : PrimitiveNoise,
+    "Bitflip": Bitflip,
+    "Phaseflip": Phaseflip,
+    "PauliChannel": PauliChannel,
+    "AmplitudeDamping": AmplitudeDamping,
+    "PhaseDamping": PhaseDamping,
+    "DigitalDepolarizing": DigitalDepolarizing,
+    "GeneralizedAmplitudeDamping": GeneralizedAmplitudeDamping,
+    "AnalogDepolarizing": AnalogDepolarizing,
+    "Dephasing": Dephasing,
+    "IndependentReadout": IndependentReadout,
+    "CorrelatedReadout": CorrelatedReadout,
+}
 
 def serialize(noise: AbstractNoise) -> dict:
     """Serialize noise.
@@ -11,7 +28,8 @@ def serialize(noise: AbstractNoise) -> dict:
     Returns:
         dict: Dictionaruy for serialization.
     """
-    return noise.model_dump()
+    type_noise = str(type(noise)).split(".")[-1][:-2]
+    return noise.model_dump() | {"type": type_noise}
 
 def deserialize(noise: dict) -> AbstractNoise:
     """Deserialize the noise dictionary back to an instance.
@@ -26,7 +44,15 @@ def deserialize(noise: dict) -> AbstractNoise:
         blocks = tuple()
         nb_blocks = len(noise['blocks'])
         for i in range(nb_blocks):
-            blocks += (PrimitiveNoise(**noise['blocks'][str(i)]),)
+            options = noise['blocks'][str(i)]
+            type_noise_i = TYPE_TO_PROTOCOLS[options['type']]
+            optionsnotype = options.copy()
+            optionsnotype.pop('type')
+            print(options)
+            blocks += (type_noise_i(**optionsnotype,))
         return CompositeNoise(blocks=blocks)
     else:
-        return PrimitiveNoise(**noise)
+        type_noise_i = TYPE_TO_PROTOCOLS[noise['type']]
+        optionsnotype = noise.copy()
+        optionsnotype.pop('type')
+        return type_noise_i(**optionsnotype)

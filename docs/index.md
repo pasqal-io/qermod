@@ -71,7 +71,7 @@ print(digital_readout)
 Regarding serialization, we can use `qermod.serialize` and `qermod.deserialize`:
 
 ```python exec="on" source="material-block" session="noise" result="json"
-from qermod import serialize, deserialize
+from qermod import serialize, deserialize, Bitflip
 noise = Bitflip(error_definition=0.1)
 noise_serial = deserialize(serialize(noise))
 assert noise == noise_serial

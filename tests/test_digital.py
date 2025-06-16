@@ -7,9 +7,23 @@ from qermod import (
     Bitflip,
     NoiseCategory,
     PrimitiveNoise,
+    deserialize,
+    serialize,
 )
 
 list_noises = [noise for noise in NoiseCategory.DIGITAL]
+
+
+def test_serialization() -> None:
+    noise = Bitflip(error_definition=0.1)
+    noise_serial = deserialize(serialize(noise))
+
+    assert noise == noise_serial
+
+    noise = PrimitiveNoise(protocol=NoiseCategory.DIGITAL.BITFLIP, error_definition=0.1)
+    noise_serial = deserialize(serialize(noise))
+
+    assert noise == noise_serial
 
 
 def test_noise_instance_model_validation() -> None:

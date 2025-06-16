@@ -65,3 +65,14 @@ print(digital_readout)
 
 !!! warning "Noise scope"
     Note it is not possible to define a noise configuration with both digital and analog noises, both readout and analog noises, several analog noises, several readout noises, or a readout noise that is not the last defined protocol in a sequence.
+
+# Serialization
+
+Regarding serialization, we can use `qermod.serialize` and `qermod.deserialize`:
+
+```python exec="on" source="material-block" session="noise" result="json"
+from qermod import serialize, deserialize
+noise = Bitflip(error_definition=0.1)
+noise_serial = deserialize(serialize(noise))
+assert noise == noise_serial
+```

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from qermod import AnalogDepolarizing, Dephasing, DigitalDepolarizing
+from qermod import AnalogDepolarizing, Dephasing, DigitalDepolarizing, deserialize, serialize
 
 
 def test_noise_instance_model_validation() -> None:
@@ -29,3 +29,6 @@ def test_equality() -> None:
 
     assert noise != noise2
     assert noise == Dephasing(error_definition=0.1)
+
+    assert noise == deserialize(serialize(noise))
+    assert noise2 == deserialize(serialize(noise2))

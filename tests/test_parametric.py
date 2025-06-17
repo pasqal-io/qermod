@@ -13,6 +13,9 @@ def test_parametric_digital() -> None:
     noise = Bitflip(error_definition=Parameter(0.1))
     assert noise.error_definition == 0.1
 
+    noise = Bitflip(error_definition="p")
+    assert isinstance(noise.error_definition, Parameter)
+
 
 def test_parametric_readout() -> None:
 
@@ -21,3 +24,6 @@ def test_parametric_readout() -> None:
 
     noise = IndependentReadout(error_definition=Parameter(0.1))
     assert noise.error_definition == 0.1
+
+    noise = IndependentReadout(error_definition="p")
+    assert isinstance(noise.error_definition, Parameter)

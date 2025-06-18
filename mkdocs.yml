@@ -1,5 +1,6 @@
 site_name: qermod
 repo_url: "https://github.com/pasqal-io/qermod"
+site_url: "https://pasqal-io.github.io/qermod/latest"
 repo_name: "qermod"
 
 nav:

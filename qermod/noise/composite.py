@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pydantic import model_validator
+from pydantic import field_serializer, model_validator
 
 from qermod.types import NoiseCategory
 
@@ -38,6 +38,10 @@ class CompositeNoise(AbstractNoise):
             ):
                 raise ValueError("Only define a Noise with one READOUT as the last Noise.")
         return self
+
+    @field_serializer("blocks")
+    def serialize_blocks(self, blocks: tuple[AbstractNoise, ...]) -> dict:
+        return {str(i): blocks[i].model_dump() for i in range(len(blocks))}
 
     def __iter__(self) -> CompositeNoise:
         self._iterator = iter(self.blocks)

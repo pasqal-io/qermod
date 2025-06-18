@@ -3,13 +3,31 @@ from __future__ import annotations
 import pytest
 import torch
 
-from qermod import CorrelatedReadout, IndependentReadout, NoiseCategory, PrimitiveNoise
+from qermod import (
+    CorrelatedReadout,
+    IndependentReadout,
+    NoiseCategory,
+    PrimitiveNoise,
+    deserialize,
+    serialize,
+)
 
 
 def test_noise_instance_model_validation() -> None:
 
     with pytest.raises(ValueError):
         IndependentReadout(error_definition=-0.1)
+
+
+@pytest.mark.parametrize(
+    "initial_noise",
+    [
+        IndependentReadout(error_definition=0.1),
+        CorrelatedReadout(error_definition=torch.rand((4, 4))),
+    ],
+)
+def test_serialization(initial_noise: PrimitiveNoise) -> None:
+    assert initial_noise == deserialize(serialize(initial_noise))
 
 
 @pytest.mark.parametrize(

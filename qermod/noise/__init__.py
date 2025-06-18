@@ -6,4 +6,4 @@ from .primitive import PrimitiveNoise
 from .utils import chain
 
 # Modules to be automatically added to the namespace
-__all__ = ["AbstractNoise", "chain"]
+__all__ = ["AbstractNoise", "PrimitiveNoise", "CompositeNoise", "chain"]

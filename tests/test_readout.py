@@ -48,9 +48,9 @@ def test_serialization(initial_noise: PrimitiveNoise) -> None:
 def test_append(initial_noise: PrimitiveNoise, noise_config: list[NoiseCategory]) -> None:
     for c in noise_config:
         with pytest.raises(ValueError):
-            initial_noise + PrimitiveNoise(protocol=c, error_definition=0.1)
+            initial_noise | PrimitiveNoise(protocol=c, error_definition=0.1)
     with pytest.raises(ValueError):
-        initial_noise + IndependentReadout(error_definition=0.1)
+        initial_noise | IndependentReadout(error_definition=0.1)
 
     with pytest.raises(ValueError):
-        initial_noise + CorrelatedReadout(error_definition=torch.rand((4, 4)))
+        initial_noise | CorrelatedReadout(error_definition=torch.rand((4, 4)))

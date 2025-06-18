@@ -51,12 +51,12 @@ simple_primitive = PrimitiveNoise(protocol=NoiseProtocol.DIGITAL.BITFLIP, error_
 
 ## Chaining
 
-One can also compose noise configurations via the `chain` method, or by using the `+` or `+=` operator.
+One can also compose noise configurations via the `chain` method, or by using the `|` or `|=` operator.
 
 ```python exec="on" source="material-block" session="noise" result="json"
 from qermod import chain
 
-digital_readout = digital_noise + readout_noise
+digital_readout = digital_noise | readout_noise
 print(digital_readout)
 
 digital_readout = chain(digital_noise, readout_noise)
@@ -66,6 +66,15 @@ print(digital_readout)
 !!! warning "Noise scope"
     Note it is not possible to define a noise configuration with both digital and analog noises, both readout and analog noises, several analog noises, several readout noises, or a readout noise that is not the last defined protocol in a sequence.
 
+# Implement parametric noise
+
+Noise definition can be made parametric via `qadence.parameters.Parameter`:
+
+
+```python exec="on" source="material-block" session="noise" result="json"
+from qadence.parameters import Parameter
+digital_noise = protocols.Bitflip(error_definition=Parameter('p', trainable=True))
+```
 # Serialization
 
 Regarding serialization, we can use `qermod.serialize` and `qermod.deserialize`:

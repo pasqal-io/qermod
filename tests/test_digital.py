@@ -48,18 +48,18 @@ def test_append(noise_config: list[NoiseCategory]) -> None:
 
     len_noise_config = len(noise_config)
     for p in noise_config:
-        noise += PrimitiveNoise(protocol=p, error_definition=0.1)
+        noise |= PrimitiveNoise(protocol=p, error_definition=0.1)
 
     assert len(noise) == (len_noise_config + 1)
 
     with pytest.raises(ValueError):
-        noise + AnalogDepolarizing(error_definition=0.1)
+        noise | AnalogDepolarizing(error_definition=0.1)
 
 
 def test_equality() -> None:
     noise = Bitflip(error_definition=0.1)
-    noise += Bitflip(error_definition=0.1)
+    noise |= Bitflip(error_definition=0.1)
 
-    noise2 = Bitflip(error_definition=0.1) + Bitflip(error_definition=0.1)
+    noise2 = Bitflip(error_definition=0.1) | Bitflip(error_definition=0.1)
 
     assert noise == noise2

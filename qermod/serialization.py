@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import cast
 
 from qermod.noise import AbstractNoise, CompositeNoise
 from qermod.protocols import *
@@ -21,7 +21,7 @@ TYPE_TO_PROTOCOLS: dict = {
 }
 
 
-def serialize(noise: AbstractNoise) -> Any:
+def serialize(noise: AbstractNoise) -> dict:
     """Serialize noise.
 
     Args:
@@ -31,7 +31,7 @@ def serialize(noise: AbstractNoise) -> Any:
         dict: Dictionary for serialization.
     """
     type_noise = str(type(noise)).split(".")[-1][:-2]
-    return noise.model_dump() | {"type": type_noise}
+    return cast(dict, noise.model_dump()) | {"type": type_noise}
 
 
 def deserialize(noise: dict) -> AbstractNoise:
@@ -50,7 +50,6 @@ def deserialize(noise: dict) -> AbstractNoise:
             type_noise_i = TYPE_TO_PROTOCOLS[options["type"]]
             optionsnotype = options.copy()
             optionsnotype.pop("type")
-            print(options)
             blocks += type_noise_i(
                 **optionsnotype,
             )

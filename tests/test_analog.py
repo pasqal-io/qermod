@@ -18,9 +18,9 @@ def test_error_append() -> None:
     noise = Dephasing(error_definition=0.1)
     with pytest.raises(ValueError):
 
-        noise + AnalogDepolarizing(error_definition=0.1)
+        noise | AnalogDepolarizing(error_definition=0.1)
     with pytest.raises(ValueError):
-        noise + DigitalDepolarizing(error_definition=0.1)
+        noise | DigitalDepolarizing(error_definition=0.1)
 
 
 def test_equality() -> None:

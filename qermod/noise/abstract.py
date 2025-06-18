@@ -13,21 +13,21 @@ class AbstractNoise(ABC, BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    def __add__(self, other: AbstractNoise) -> AbstractNoise:
+    def __or__(self, other: AbstractNoise) -> AbstractNoise:
         from qermod.noise.utils import chain
 
         if not isinstance(other, AbstractNoise):
             raise TypeError(f"Can only add a block to another block. Got {type(other)}.")
         return chain(self, other)
 
-    def __iadd__(self, other: AbstractNoise) -> AbstractNoise:
+    def __ior__(self, other: AbstractNoise) -> AbstractNoise:
         from qermod.noise.composite import CompositeNoise
         from qermod.noise.utils import chain
 
         if not isinstance(other, AbstractNoise):
             raise TypeError(f"Can only add a block to another block. Got {type(other)}.")
 
-        # We make sure to unroll any CompositeNoise, because for iadd we
+        # We make sure to unroll any CompositeNoise, because for ior we
         # assume the user expected in-place addition
         return chain(
             *self.blocks if isinstance(self, CompositeNoise) else (self,),

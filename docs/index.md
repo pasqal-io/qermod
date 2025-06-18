@@ -51,12 +51,12 @@ simple_primitive = PrimitiveNoise(protocol=NoiseProtocol.DIGITAL.BITFLIP, error_
 
 ## Chaining
 
-One can also compose noise configurations via the `chain` method, or by using the `+` or `+=` operator.
+One can also compose noise configurations via the `chain` method, or by using the `|` or `|=` operator.
 
 ```python exec="on" source="material-block" session="noise" result="json"
 from qermod import chain
 
-digital_readout = digital_noise + readout_noise
+digital_readout = digital_noise | readout_noise
 print(digital_readout)
 
 digital_readout = chain(digital_noise, readout_noise)

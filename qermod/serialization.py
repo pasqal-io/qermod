@@ -28,7 +28,7 @@ def serialize(noise: AbstractNoise) -> Any:
         noise (AbstractNoise): A noise configuration
 
     Returns:
-        dict: Dictionaruy for serialization.
+        dict: Dictionary for serialization.
     """
     type_noise = str(type(noise)).split(".")[-1][:-2]
     return noise.model_dump() | {"type": type_noise}

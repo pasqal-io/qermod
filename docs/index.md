@@ -75,7 +75,6 @@ Noise definition can be made parametric via `qadence.parameters.Parameter`:
 from qadence.parameters import Parameter
 digital_noise = protocols.Bitflip(error_definition=Parameter('p', trainable=True))
 ```
-
 # Serialization
 
 Regarding serialization, we can use `qermod.serialize` and `qermod.deserialize`:
@@ -87,14 +86,3 @@ noise_serial = deserialize(serialize(noise))
 assert noise == noise_serial
 ```
 
-# Implement parametric noise
-
-Noise definition can be made parametric via `qadence.parameters.Parameter`:
-
-
-```python exec="on" source="material-block" session="noise" result="json"
-from qadence.parameters import Parameter
-digital_noise = protocols.Bitflip(error_definition=Parameter('p', trainable=True))
-
-print(digital_noise)
-```

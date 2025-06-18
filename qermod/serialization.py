@@ -45,8 +45,7 @@ def deserialize(noise: dict) -> AbstractNoise:
     """
     if "blocks" in noise:
         blocks: tuple = tuple()
-        nb_blocks = len(noise["blocks"])
-        for i in range(nb_blocks):
+        for i in range(len(noise["blocks"])):
             options = noise["blocks"][str(i)]
             type_noise_i = TYPE_TO_PROTOCOLS[options["type"]]
             optionsnotype = options.copy()

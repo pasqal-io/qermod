@@ -85,4 +85,3 @@ noise = Bitflip(error_definition=0.1)
 noise_serial = deserialize(serialize(noise))
 assert noise == noise_serial
 ```
-

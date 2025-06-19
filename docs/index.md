@@ -93,5 +93,6 @@ We can filter by noise type via the `filter` method:
 
 ```python exec="on" source="material-block" session="noise" result="json"
 from qermod import Noise
-digital_readout.filter(Noise.DIGITAL)
+filtered_noise = digital_readout.filter(Noise.DIGITAL)
+print(filtered_noise) # markdown-exec: hide
 ```

@@ -5,7 +5,13 @@ from typing import cast
 import pytest
 import torch
 
-from qermod import CorrelatedReadout, IndependentReadout, PrimitiveNoise
+from qermod import (
+    AnalogDepolarizing,
+    CorrelatedReadout,
+    Dephasing,
+    IndependentReadout,
+    PrimitiveNoise,
+)
 
 
 @pytest.fixture(
@@ -15,6 +21,18 @@ from qermod import CorrelatedReadout, IndependentReadout, PrimitiveNoise
     ],
 )
 def readout_noise(
+    request: pytest.Fixture,
+) -> PrimitiveNoise:
+    return cast(PrimitiveNoise, request.param)
+
+
+@pytest.fixture(
+    params=[
+        AnalogDepolarizing(error_definition=0.1),
+        Dephasing(error_definition=0.1),
+    ],
+)
+def analog_noise(
     request: pytest.Fixture,
 ) -> PrimitiveNoise:
     return cast(PrimitiveNoise, request.param)

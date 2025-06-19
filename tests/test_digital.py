@@ -14,13 +14,9 @@ from qermod import (
 digital_noises = Noise.DIGITAL.list()
 
 
-def test_serialization() -> None:
-    noise = Bitflip(error_definition=0.1)
-    noise_serial = deserialize(serialize(noise))
-
-    assert noise == noise_serial
-
-    noise = PrimitiveNoise(protocol=Noise.DIGITAL.BITFLIP, error_definition=0.1)
+@pytest.mark.parametrize("noise_config", digital_noises)
+def test_serialization(noise_config: Noise.DIGITAL) -> None:
+    noise = PrimitiveNoise(protocol=noise_config, error_definition=0.1)
     noise_serial = deserialize(serialize(noise))
 
     assert noise == noise_serial

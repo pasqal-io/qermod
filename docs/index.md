@@ -79,7 +79,7 @@ print(digital_readout)
 !!! warning "Noise scope"
     Note it is not possible to define a noise configuration with both digital and analog noises, both readout and analog noises, several analog noises, several readout noises, or a readout noise that is not the last defined protocol in a sequence.
 
-# Implement parametric noise
+## Implement parametric noise
 
 Noise definition can be made parametric via `qadence.parameters.Parameter`:
 
@@ -89,7 +89,7 @@ from qadence.parameters import Parameter
 digital_noise = protocols.Bitflip(error_definition=Parameter('p', trainable=True))
 ```
 
-# Serialization
+## Serialization
 
 Serialization is enabled via the `qermod.serialize` and `qermod.deserialize` functions:
 
@@ -101,7 +101,7 @@ assert noise == noise_serial
 ```
 
 
-# Specifying target gates
+## Specifying target gates
 
 To specify a gate can only act on a type of gates or set of gates, we need to specify the `target_gates` attribute:
 
@@ -110,7 +110,7 @@ from qadence import X, Y
 noise = Bitflip(error_definition=0.1, target_gates=[X, Y(0)]) # any gate of type X or any Y applied on qubit 0
 ```
 
-# Filtering
+## Filtering
 
 We can filter by noise type via the `filter` method:
 

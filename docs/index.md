@@ -10,11 +10,21 @@ $$
 
 The noise protocols applicable in `Qermod` are classified into three types: digital (for digital operations), analog (for analog operations), and readout error (for measurements).
 
-# Available noise types
+# Available noise models
 
 ## Digital noisy simulation
 
-Digital noise refer to unintended changes occurring with reference to the application of a noiseless digital gate operation.
+Digital noise refer to unintended changes occurring with reference to the application of a noiseless digital gate operation. Several noise models
+are made available via the[`PyQTorch` backend](https://pasqal-io.github.io/pyqtorch/latest/noise/).
+Given an `error_definition` user-defined input, we support the following digital noise models:
+
+- `BITFLIP`: flips between |0⟩ and |1⟩ with `error_definition`
+- `PHASEFLIP`: flips the phase of a qubit by applying a Z gate with `error_definition`
+- `DEPOLARIZING`: randomizes the state of a qubit by applying I, X, Y, or Z gates with equal `error_definition`
+- `PAULI_CHANNEL`: applies the Pauli operators (X, Y, Z) to a qubit with specified probabilities (via `error_definition`)
+- `AMPLITUDE_DAMPING`: models the asymmetric process through which the qubit state |1⟩ irreversibly decays into the state |0⟩ with `error_definition`
+- `PHASE_DAMPING`: similar to AMPLITUDE_DAMPING but concerning the phase
+- `GENERALIZED_AMPLITUDE_DAMPING`: extends amplitude damping; the first float is `error_definition` of amplitude damping, and second float is the `damping_rate`.
 
 ## Readout errors
 
@@ -27,15 +37,18 @@ $$
 
 Two types of readout protocols are available:
 
-- `INDEPENDENT` where each bit can be corrupted independently of each other.
-- `CORRELATED` where we can define of confusion matrix of corruption between each
+- `Independent` where each bit can be corrupted independently of each other.
+- `Correlated` where we can define of confusion matrix of corruption between each
 possible bitstrings.
 
 
 ## Analog noisy simulation
 
 Analog noise can be set for analog operations.
-At the moment, analog noisy simulations are only compatible with the Pulser backend.
+At the moment, analog noisy simulations are only compatible with the `Pulser` backend, and we support the following models:
+
+- `Depolarizing`: evolves to the maximally mixed state with `noise_probs`
+- `Dephasing`: induces the loss of phase coherence without affecting the population of computational basis states
 
 # Implementation
 

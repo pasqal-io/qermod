@@ -1,8 +1,12 @@
 from __future__ import annotations
 
-import torch
-from qermod import PrimitiveNoise, IndependentReadout, CorrelatedReadout
+from typing import cast
+
 import pytest
+import torch
+
+from qermod import CorrelatedReadout, IndependentReadout, PrimitiveNoise
+
 
 @pytest.fixture(
     params=[
@@ -13,5 +17,4 @@ import pytest
 def readout_noise(
     request: pytest.Fixture,
 ) -> PrimitiveNoise:
-    return request.param
-
+    return cast(PrimitiveNoise, request.param)

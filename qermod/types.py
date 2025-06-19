@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Union
 
 from pyqtorch.noise import DigitalNoiseType as DigitalNoise
 from qadence.parameters import Parameter
@@ -36,5 +37,5 @@ class Noise:
     """Noise applied to digital blocks."""
 
 
-NoiseSubType = DigitalNoise | AnalogNoise | ReadoutNoise
+NoiseSubType = Union[DigitalNoise, AnalogNoise, ReadoutNoise]
 ERROR_TYPE = Parameter | TParameter

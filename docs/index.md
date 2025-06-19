@@ -86,7 +86,7 @@ Noise definition can be made parametric via `qadence.parameters.Parameter`:
 
 ```python exec="on" source="material-block" session="noise" result="json"
 from qadence.parameters import Parameter
-digital_noise = protocols.Bitflip(error_definition=Parameter('p', trainable=True))
+digital_noise = Bitflip(error_definition=Parameter('p', trainable=True))
 ```
 
 ## Serialization

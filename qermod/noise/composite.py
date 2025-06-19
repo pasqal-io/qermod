@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pydantic import field_serializer, model_validator
 
-from qermod.types import Noise
+from qermod.types import Noise, NoiseSubType
 
 from .abstract import AbstractNoise
 
@@ -86,10 +86,9 @@ class CompositeNoise(AbstractNoise):
             )
         return False
 
-    def filter(self, noise_type: type[Noise]) -> AbstractNoise | None:
+    def filter(self, noise_type: type[Noise] | NoiseSubType) -> list[AbstractNoise]:
 
         blocks = [block.filter(noise_type) for block in self.blocks]
         if blocks != [None] * len(blocks):
-            blocks = [b for b in blocks if b]
-            return CompositeNoise(blocks=blocks)
-        return None
+            return [b[0] for b in blocks if len(b) == 1]  # type: ignore [return-value]
+        return list()

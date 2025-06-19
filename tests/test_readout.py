@@ -24,9 +24,11 @@ def test_serialization(readout_noise: PrimitiveNoise) -> None:
 
 
 def test_filter(readout_noise: PrimitiveNoise) -> None:
-    assert readout_noise.filter(Noise.READOUT) == readout_noise
-    assert readout_noise.filter(Noise.ANALOG) is None
-    assert readout_noise.filter(Noise.DIGITAL) is None
+    assert readout_noise.filter(Noise.READOUT)
+    assert not readout_noise.filter(Noise.ANALOG)
+    assert not readout_noise.filter(Noise.DIGITAL)
+
+    assert readout_noise.filter(readout_noise.protocol)
 
 
 @pytest.mark.parametrize(

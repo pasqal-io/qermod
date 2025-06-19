@@ -35,8 +35,10 @@ class PrimitiveNoise(AbstractNoise):
     def flatten(self) -> PrimitiveNoise:
         return self
 
-    def filter(self, noise_type: type[Noise]) -> AbstractNoise | None:
+    def filter(self, noise_type: type[Noise] | NoiseSubType) -> list[AbstractNoise]:
 
-        if isinstance(self.protocol, noise_type):
-            return self
-        return None
+        if self.protocol == noise_type or isinstance(self.protocol, noise_type):
+            return [
+                self,
+            ]
+        return list()

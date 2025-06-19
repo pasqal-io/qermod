@@ -1,15 +1,25 @@
-# `Qermod`
+# Noisy Simulation
 
-Running programs on NISQ devices often leads to partially useful results due to the presence of noise.
-In order to perform realistic simulations, a number of noise models are defined in `Qermod` (for digital or analog operations and simulated readout errors) are supported in `Qadence` through their implementation in backends and
-corresponding error mitigation techniques whenever possible.
+Running programs on NISQ devices often leads to imperfect results due to the presence of noise. In order to perform realistic simulations, a number of noise models (for digital operations, analog operations and simulated readout errors) are supported in `Qadence`.
 
-# Noise
+Noisy simulations shift the quantum paradigm from a close-system (noiseless case) to an open-system (noisy case) where a quantum system is represented by a probabilistic combination $p_i$ of possible pure states $|\psi_i \rangle$. Thus, the system is described by a density matrix $\rho$ (and computation modify the density matrix) defined as follows:
+
+$$
+\rho = \sum_i p_i |\psi_i\rangle \langle \psi_i|
+$$
+
+The noise protocols applicable in `Qermod` are classified into three types: digital (for digital operations), analog (for analog operations), and readout error (for measurements).
+
+# Available noise types
+
+## Digital noisy simulation
+
+Digital noise refer to unintended changes occurring with reference to the application of a noiseless digital gate operation.
 
 ## Readout errors
 
-State Preparation and Measurement (SPAM) in the hardware is a major source of noise in the execution of
-quantum programs. They are typically described using confusion matrices of the form:
+Readout errors are linked to the incorrect measurement outcomes from the system.
+They are typically described using confusion matrices of the form:
 
 $$
 T(x|x')=\delta_{xx'}
@@ -17,36 +27,26 @@ $$
 
 Two types of readout protocols are available:
 
-- `Noise.READOUT.INDEPENDENT` where each bit can be corrupted independently of each other.
-- `Noise.READOUT.CORRELATED` where we can define of confusion matrix of corruption between each
+- `INDEPENDENT` where each bit can be corrupted independently of each other.
+- `CORRELATED` where we can define of confusion matrix of corruption between each
 possible bitstrings.
 
 
 ## Analog noisy simulation
 
+Analog noise can be set for analog operations.
 At the moment, analog noisy simulations are only compatible with the Pulser backend.
-
-## Digital noisy simulation
-
-When dealing with programs involving only digital operations, several options are made available from [PyQTorch](https://pasqal-io.github.io/pyqtorch/latest/noise/) via the `Noise.DIGITAL`.
 
 # Implementation
 
-## PrimitiveNoise
-
-A primitive Noise models can be defined via the `PrimitiveNoise`. It contains a noise configuration
-defined by a `Noise` type and an `error_definition` argument. Several predefined types are available in `qermod.protocols`.
+Several predefined noise models are available in `Qermod`.
 
 ```python exec="on" source="material-block" session="noise" result="json"
-from qermod import PrimitiveNoise
-from qermod import protocols
-from qermod.types import Noise
+from qermod import AnalogDepolarizing, Bitflip, IndependentReadout
 
-analog_noise = protocols.AnalogDepolarizing(error_definition=0.1)
-digital_noise = protocols.Bitflip(error_definition=0.1)
-readout_noise = protocols.IndependentReadout(error_definition=0.1)
-
-simple_primitive = PrimitiveNoise(protocol=Noise.DIGITAL.BITFLIP, error_definition=0.1)
+analog_noise = AnalogDepolarizing(error_definition=0.1)
+digital_noise = Bitflip(error_definition=0.1)
+readout_noise = IndependentReadout(error_definition=0.1)
 ```
 
 ## Chaining

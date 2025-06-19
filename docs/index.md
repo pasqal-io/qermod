@@ -47,7 +47,7 @@ possible bitstrings.
 Analog noise can be set for analog operations.
 At the moment, analog noisy simulations are only compatible with the `Pulser` backend, and we support the following models:
 
-- `AnalogDepolarizing`: evolves to the maximally mixed state with `noise_probs`
+- `AnalogDepolarizing`: evolves to the maximally mixed state with probabilities defined with `error_definition`
 - `Dephasing`: induces the loss of phase coherence without affecting the population of computational basis states
 
 # Implementation

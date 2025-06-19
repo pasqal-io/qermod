@@ -27,6 +27,7 @@ classifiers=[
 ]
 dependencies = [
     "pydantic",
+    "eval-type-backport",
     "qadence-commons",
     "qadence",
     "ipykernel",

@@ -78,7 +78,7 @@ digital_noise = protocols.Bitflip(error_definition=Parameter('p', trainable=True
 
 # Serialization
 
-Regarding serialization, we can use `qermod.serialize` and `qermod.deserialize`:
+Serialization is enabled via the `qermod.serialize` and `qermod.deserialize` functions:
 
 ```python exec="on" source="material-block" session="noise" result="json"
 from qermod import serialize, deserialize, Bitflip

@@ -91,5 +91,5 @@ class CompositeNoise(AbstractNoise):
         blocks = [block.filter(noise_type) for block in self.blocks]
         if blocks != [None] * len(blocks):
             blocks = [b for b in blocks if b]
-            return CompositeNoise(blocks)
+            return CompositeNoise(blocks=blocks)
         return None

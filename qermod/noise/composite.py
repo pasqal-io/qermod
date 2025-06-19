@@ -85,3 +85,11 @@ class CompositeNoise(AbstractNoise):
                 f"Can not check for containment between {type(self)} and {type(other)}."
             )
         return False
+
+    def filter(self, noise_type: type[Noise]) -> AbstractNoise | None:
+
+        blocks = [block.filter(noise_type) for block in self.blocks]
+        if blocks != [None] * len(blocks):
+            blocks = [b for b in blocks if b]
+            return CompositeNoise(blocks)
+        return None

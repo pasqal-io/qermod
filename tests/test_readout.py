@@ -19,15 +19,14 @@ def test_noise_instance_model_validation() -> None:
         IndependentReadout(error_definition=-0.1)
 
 
-@pytest.mark.parametrize(
-    "initial_noise",
-    [
-        IndependentReadout(error_definition=0.1),
-        CorrelatedReadout(error_definition=torch.rand((4, 4))),
-    ],
-)
-def test_serialization(initial_noise: PrimitiveNoise) -> None:
-    assert initial_noise == deserialize(serialize(initial_noise))
+def test_serialization(readout_noise: PrimitiveNoise) -> None:
+    assert readout_noise == deserialize(serialize(readout_noise))
+
+
+def test_filter(readout_noise: PrimitiveNoise) -> None:
+    assert readout_noise.filter(Noise.READOUT) == readout_noise
+    assert readout_noise.filter(Noise.ANALOG) is None
+    assert readout_noise.filter(Noise.DIGITAL) is None
 
 
 @pytest.mark.parametrize(
@@ -38,19 +37,12 @@ def test_serialization(initial_noise: PrimitiveNoise) -> None:
         [Noise.DIGITAL.BITFLIP, Noise.DIGITAL.PHASEFLIP],
     ],
 )
-@pytest.mark.parametrize(
-    "initial_noise",
-    [
-        IndependentReadout(error_definition=0.1),
-        CorrelatedReadout(error_definition=torch.rand((4, 4))),
-    ],
-)
-def test_append(initial_noise: PrimitiveNoise, noise_config: list[Noise]) -> None:
+def test_append(readout_noise: PrimitiveNoise, noise_config: list[Noise]) -> None:
     for c in noise_config:
         with pytest.raises(ValueError):
-            initial_noise | PrimitiveNoise(protocol=c, error_definition=0.1)
+            readout_noise | PrimitiveNoise(protocol=c, error_definition=0.1)
     with pytest.raises(ValueError):
-        initial_noise | IndependentReadout(error_definition=0.1)
+        readout_noise | IndependentReadout(error_definition=0.1)
 
     with pytest.raises(ValueError):
-        initial_noise | CorrelatedReadout(error_definition=torch.rand((4, 4)))
+        readout_noise | CorrelatedReadout(error_definition=torch.rand((4, 4)))

@@ -6,7 +6,7 @@ from pydantic import field_validator
 from qadence.parameters import Parameter
 
 from qermod.noise.abstract import AbstractNoise
-from qermod.types import ERROR_TYPE, NoiseEnum
+from qermod.types import ERROR_TYPE, Noise, NoiseEnum
 
 
 class PrimitiveNoise(AbstractNoise):
@@ -34,3 +34,9 @@ class PrimitiveNoise(AbstractNoise):
 
     def flatten(self) -> PrimitiveNoise:
         return self
+
+    def filter(self, noise_type: type[Noise]) -> AbstractNoise | None:
+
+        if isinstance(self.protocol, noise_type):
+            return self
+        return None

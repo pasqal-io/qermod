@@ -19,8 +19,16 @@ def test_initialization_target_gates() -> None:
     noise = Bitflip(error_definition=0.1)
     assert not noise.target_gates
 
-    noise = Bitflip(error_definition=0.1, target_gates=[X, Y(0)])
-    assert len(noise.target_gates) == 2
+    noise = Bitflip(error_definition=0.1, target_gates=X)
+    assert noise.target_gates == X
+
+    noise = Bitflip(error_definition=0.1, target_gates=Y(0))
+    assert noise.target_gates == Y(0)
+
+    targets = [X, Y(0)]
+    noise = Bitflip(error_definition=0.1, target_gates=targets)
+    for i in range(2):
+        assert noise.target_gates[i] == targets[i]
 
 
 def test_serialization() -> None:

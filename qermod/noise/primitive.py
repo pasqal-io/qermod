@@ -17,7 +17,9 @@ class PrimitiveNoise(AbstractNoise):
 
     protocol: NoiseCategoryEnum
     error_definition: ERROR_TYPE
-    target_gates: list[AbstractBlock | type[AbstractBlock]] = list()
+    target_gates: (
+        AbstractBlock | type[AbstractBlock] | list[AbstractBlock | type[AbstractBlock]]
+    ) = list()
 
     @field_validator("error_definition", mode="before")
     @classmethod

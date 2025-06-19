@@ -79,7 +79,7 @@ print(digital_readout)
 !!! warning "Noise scope"
     Note it is not possible to define a noise configuration with both digital and analog noises, both readout and analog noises, several analog noises, several readout noises, or a readout noise that is not the last defined protocol in a sequence.
 
-## Implement parametric noise
+## Parametric noise
 
 Noise definition can be made parametric via `qadence.parameters.Parameter`:
 

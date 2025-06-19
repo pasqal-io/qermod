@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+from qadence import X, Y
 
 from qermod import (
     AnalogDepolarizing,
@@ -12,6 +13,14 @@ from qermod import (
 )
 
 list_noises = [noise for noise in NoiseCategory.DIGITAL]
+
+
+def test_initialization_target_gates() -> None:
+    noise = Bitflip(error_definition=0.1)
+    assert not noise.target_gates
+
+    noise = Bitflip(error_definition=0.1, target_gates=[X, Y(0)])
+    assert len(noise.target_gates) == 2
 
 
 def test_serialization() -> None:

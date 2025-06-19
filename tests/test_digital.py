@@ -11,7 +11,7 @@ from qermod import (
     serialize,
 )
 
-list_noises = [noise for noise in Noise.DIGITAL]
+digital_noises = Noise.DIGITAL.list()
 
 
 def test_serialization() -> None:

@@ -36,7 +36,7 @@ class CompositeNoise(AbstractNoise):
                 primitives[-1].protocol not in Noise.READOUT.list()
                 or types.count(Noise.READOUT) > 1
             ):
-                raise ValueError("Only define a Noise with one READOUT as the last Noise.")
+                raise ValueError("Only define a Noise with one READOUT as the last instance.")
         return self
 
     @field_serializer("blocks")

@@ -40,7 +40,7 @@ defined by a `Noise` type and an `error_definition` argument. Several predefined
 ```python exec="on" source="material-block" session="noise" result="json"
 from qermod import PrimitiveNoise
 from qermod import protocols
-from qadence.types import Noise
+from qermod.types import Noise
 
 analog_noise = protocols.AnalogDepolarizing(error_definition=0.1)
 digital_noise = protocols.Bitflip(error_definition=0.1)
@@ -75,6 +75,7 @@ Noise definition can be made parametric via `qadence.parameters.Parameter`:
 from qadence.parameters import Parameter
 digital_noise = protocols.Bitflip(error_definition=Parameter('p', trainable=True))
 ```
+
 # Serialization
 
 Regarding serialization, we can use `qermod.serialize` and `qermod.deserialize`:
@@ -84,4 +85,13 @@ from qermod import serialize, deserialize, Bitflip
 noise = Bitflip(error_definition=0.1)
 noise_serial = deserialize(serialize(noise))
 assert noise == noise_serial
+```
+
+# Filtering
+
+We can filter by noise type via the `filter` method:
+
+```python exec="on" source="material-block" session="noise" result="json"
+from qermod import Noise
+digital_readout.filter(Noise.DIGITAL)
 ```

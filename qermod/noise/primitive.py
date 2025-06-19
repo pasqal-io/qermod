@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable, Union
+from typing import Iterable, List, Union
 
 from pydantic import field_validator
 from qadence import AbstractBlock
@@ -17,7 +17,7 @@ class PrimitiveNoise(AbstractNoise):
 
     protocol: NoiseCategoryEnum
     error_definition: ERROR_TYPE
-    target_gates: list[Union[AbstractBlock, type[AbstractBlock]]] = list()
+    target_gates: List[Union[AbstractBlock, type[AbstractBlock]]] = list()
 
     @field_validator("error_definition", mode="before")
     @classmethod

@@ -85,3 +85,13 @@ noise = Bitflip(error_definition=0.1)
 noise_serial = deserialize(serialize(noise))
 assert noise == noise_serial
 ```
+
+
+# Specifying target gates
+
+To specify a gate can only act on a type of gates or set of gates, we need to specify the `target_gates` attribute:
+
+```python exec="on" source="material-block" session="noise" result="json"
+from qadence import X, Y
+noise = Bitflip(error_definition=0.1, target_gates=[X, Y(0)]) # any gate of type X or any Y applied on qubit 0
+```

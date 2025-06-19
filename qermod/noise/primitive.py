@@ -6,7 +6,7 @@ from pydantic import field_validator
 from qadence.parameters import Parameter
 
 from qermod.noise.abstract import AbstractNoise
-from qermod.types import ERROR_TYPE, NoiseCategoryEnum
+from qermod.types import ERROR_TYPE, NoiseEnum
 
 
 class PrimitiveNoise(AbstractNoise):
@@ -14,7 +14,7 @@ class PrimitiveNoise(AbstractNoise):
     Primitive noise represent elementary noise operations.
     """
 
-    protocol: NoiseCategoryEnum
+    protocol: NoiseEnum
     error_definition: ERROR_TYPE
 
     @field_validator("error_definition", mode="before")

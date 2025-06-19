@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pydantic import field_serializer, model_validator
 
-from qermod.types import NoiseCategory
+from qermod.types import Noise
 
 from .abstract import AbstractNoise
 
@@ -22,19 +22,19 @@ class CompositeNoise(AbstractNoise):
         primitives = self.flatten()
         types = [type(p.protocol) for p in primitives]
         unique_types = set(types)
-        if NoiseCategory.DIGITAL in unique_types and NoiseCategory.ANALOG in unique_types:
+        if Noise.DIGITAL in unique_types and Noise.ANALOG in unique_types:
             raise ValueError("Cannot define a config with both DIGITAL and ANALOG noises.")
 
-        if NoiseCategory.ANALOG in unique_types:
-            if NoiseCategory.READOUT in unique_types:
+        if Noise.ANALOG in unique_types:
+            if Noise.READOUT in unique_types:
                 raise ValueError("Cannot define a config with both READOUT and ANALOG noises.")
-            if types.count(NoiseCategory.ANALOG) > 1:
+            if types.count(Noise.ANALOG) > 1:
                 raise ValueError("Multiple ANALOG Noises are not supported yet.")
 
-        if NoiseCategory.READOUT in unique_types:
+        if Noise.READOUT in unique_types:
             if (
-                primitives[-1].protocol not in NoiseCategory.READOUT.list()
-                or types.count(NoiseCategory.READOUT) > 1
+                primitives[-1].protocol not in Noise.READOUT.list()
+                or types.count(Noise.READOUT) > 1
             ):
                 raise ValueError("Only define a Noise with one READOUT as the last Noise.")
         return self

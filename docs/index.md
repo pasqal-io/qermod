@@ -17,8 +17,8 @@ $$
 
 Two types of readout protocols are available:
 
-- `NoiseCategory.READOUT.INDEPENDENT` where each bit can be corrupted independently of each other.
-- `NoiseCategory.READOUT.CORRELATED` where we can define of confusion matrix of corruption between each
+- `Noise.READOUT.INDEPENDENT` where each bit can be corrupted independently of each other.
+- `Noise.READOUT.CORRELATED` where we can define of confusion matrix of corruption between each
 possible bitstrings.
 
 
@@ -28,25 +28,25 @@ At the moment, analog noisy simulations are only compatible with the Pulser back
 
 ## Digital noisy simulation
 
-When dealing with programs involving only digital operations, several options are made available from [PyQTorch](https://pasqal-io.github.io/pyqtorch/latest/noise/) via the `NoiseCategory.DIGITAL`.
+When dealing with programs involving only digital operations, several options are made available from [PyQTorch](https://pasqal-io.github.io/pyqtorch/latest/noise/) via the `Noise.DIGITAL`.
 
 # Implementation
 
 ## PrimitiveNoise
 
 A primitive Noise models can be defined via the `PrimitiveNoise`. It contains a noise configuration
-defined by a `NoiseProtocol` type and an `error_definition` argument. Several predefined types are available in `qermod.protocols`.
+defined by a `Noise` type and an `error_definition` argument. Several predefined types are available in `qermod.protocols`.
 
 ```python exec="on" source="material-block" session="noise" result="json"
 from qermod import PrimitiveNoise
 from qermod import protocols
-from qadence.types import NoiseProtocol
+from qadence.types import Noise
 
 analog_noise = protocols.AnalogDepolarizing(error_definition=0.1)
 digital_noise = protocols.Bitflip(error_definition=0.1)
 readout_noise = protocols.IndependentReadout(error_definition=0.1)
 
-simple_primitive = PrimitiveNoise(protocol=NoiseProtocol.DIGITAL.BITFLIP, error_definition=0.1)
+simple_primitive = PrimitiveNoise(protocol=Noise.DIGITAL.BITFLIP, error_definition=0.1)
 ```
 
 ## Chaining

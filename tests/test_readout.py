@@ -6,7 +6,7 @@ import torch
 from qermod import (
     CorrelatedReadout,
     IndependentReadout,
-    NoiseCategory,
+    Noise,
     PrimitiveNoise,
     deserialize,
     serialize,
@@ -33,9 +33,9 @@ def test_serialization(initial_noise: PrimitiveNoise) -> None:
 @pytest.mark.parametrize(
     "noise_config",
     [
-        [NoiseCategory.READOUT.INDEPENDENT],
-        [NoiseCategory.DIGITAL.BITFLIP],
-        [NoiseCategory.DIGITAL.BITFLIP, NoiseCategory.DIGITAL.PHASEFLIP],
+        [Noise.READOUT.INDEPENDENT],
+        [Noise.DIGITAL.BITFLIP],
+        [Noise.DIGITAL.BITFLIP, Noise.DIGITAL.PHASEFLIP],
     ],
 )
 @pytest.mark.parametrize(
@@ -45,7 +45,7 @@ def test_serialization(initial_noise: PrimitiveNoise) -> None:
         CorrelatedReadout(error_definition=torch.rand((4, 4))),
     ],
 )
-def test_append(initial_noise: PrimitiveNoise, noise_config: list[NoiseCategory]) -> None:
+def test_append(initial_noise: PrimitiveNoise, noise_config: list[Noise]) -> None:
     for c in noise_config:
         with pytest.raises(ValueError):
             initial_noise | PrimitiveNoise(protocol=c, error_definition=0.1)

@@ -5,13 +5,13 @@ import pytest
 from qermod import (
     AnalogDepolarizing,
     Bitflip,
-    NoiseCategory,
+    Noise,
     PrimitiveNoise,
     deserialize,
     serialize,
 )
 
-list_noises = [noise for noise in NoiseCategory.DIGITAL]
+list_noises = [noise for noise in Noise.DIGITAL]
 
 
 def test_serialization() -> None:
@@ -20,7 +20,7 @@ def test_serialization() -> None:
 
     assert noise == noise_serial
 
-    noise = PrimitiveNoise(protocol=NoiseCategory.DIGITAL.BITFLIP, error_definition=0.1)
+    noise = PrimitiveNoise(protocol=Noise.DIGITAL.BITFLIP, error_definition=0.1)
     noise_serial = deserialize(serialize(noise))
 
     assert noise == noise_serial
@@ -38,12 +38,12 @@ def test_noise_instance_model_validation() -> None:
 @pytest.mark.parametrize(
     "noise_config",
     [
-        [NoiseCategory.READOUT.INDEPENDENT],
-        [NoiseCategory.DIGITAL.BITFLIP],
-        [NoiseCategory.DIGITAL.BITFLIP, NoiseCategory.DIGITAL.PHASEFLIP],
+        [Noise.READOUT.INDEPENDENT],
+        [Noise.DIGITAL.BITFLIP],
+        [Noise.DIGITAL.BITFLIP, Noise.DIGITAL.PHASEFLIP],
     ],
 )
-def test_append(noise_config: list[NoiseCategory]) -> None:
+def test_append(noise_config: list[Noise]) -> None:
     noise = Bitflip(error_definition=0.1)
 
     len_noise_config = len(noise_config)

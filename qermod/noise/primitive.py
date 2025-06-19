@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Iterable
 
 from pydantic import field_validator
+from qadence import AbstractBlock
 from qadence.parameters import Parameter
 
 from qermod.noise.abstract import AbstractNoise
@@ -16,6 +17,9 @@ class PrimitiveNoise(AbstractNoise):
 
     protocol: NoiseSubType
     error_definition: ERROR_TYPE
+    target_gates: (
+        AbstractBlock | type[AbstractBlock] | list[AbstractBlock | type[AbstractBlock]]
+    ) = list()
 
     @field_validator("error_definition", mode="before")
     @classmethod

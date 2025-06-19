@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import Generator, List, Type, TypeVar, Union
+from typing import Generator, Type, TypeVar
 
 from qermod.noise import (
     AbstractNoise,
@@ -17,14 +17,14 @@ TCompositeNoise = TypeVar("TCompositeNoise", bound=CompositeNoise)
 
 def _construct(
     Block: Type[TCompositeNoise],
-    args: tuple[Union[AbstractNoise, Generator, List[AbstractNoise]], ...],
+    args: tuple[AbstractNoise | Generator | list[AbstractNoise], ...],
 ) -> TCompositeNoise:
     if len(args) == 1 and isinstance(args[0], Generator):
         args = tuple(args[0])
     return Block(blocks=(b for b in args))  # type: ignore [arg-type]
 
 
-def chain(*args: Union[AbstractNoise, Generator, List[AbstractNoise]]) -> CompositeNoise:
+def chain(*args: AbstractNoise | Generator | list[AbstractNoise]) -> CompositeNoise:
     """Chain noise blocks sequentially.
 
     Arguments:

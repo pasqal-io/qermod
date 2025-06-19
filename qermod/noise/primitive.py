@@ -7,7 +7,7 @@ from qadence import AbstractBlock
 from qadence.parameters import Parameter
 
 from qermod.noise.abstract import AbstractNoise
-from qermod.types import ERROR_TYPE, NoiseCategoryEnum
+from qermod.types import ERROR_TYPE, Noise, NoiseSubType
 
 
 class PrimitiveNoise(AbstractNoise):
@@ -15,7 +15,7 @@ class PrimitiveNoise(AbstractNoise):
     Primitive noise represent elementary noise operations.
     """
 
-    protocol: NoiseCategoryEnum
+    protocol: NoiseSubType
     error_definition: ERROR_TYPE
     target_gates: (
         AbstractBlock | type[AbstractBlock] | list[AbstractBlock | type[AbstractBlock]]
@@ -38,3 +38,11 @@ class PrimitiveNoise(AbstractNoise):
 
     def flatten(self) -> PrimitiveNoise:
         return self
+
+    def filter(self, noise_type: type[Noise] | NoiseSubType) -> list[AbstractNoise]:
+
+        if self.protocol == noise_type or isinstance(self.protocol, noise_type):
+            return [
+                self,
+            ]
+        return list()

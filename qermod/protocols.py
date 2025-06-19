@@ -70,7 +70,7 @@ class IndependentReadout(PrimitiveNoise):
     """
 
     protocol: NoiseEnum = Field(default=Noise.READOUT.INDEPENDENT, frozen=True)
-    seed: Optional[int] = None
+    seed: int | None = None
     noise_distribution: Optional[WhiteNoise] = None
 
 

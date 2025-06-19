@@ -38,4 +38,4 @@ class Noise:
 
 
 NoiseSubType = Union[DigitalNoise, AnalogNoise, ReadoutNoise]
-ERROR_TYPE = Parameter | TParameter
+ERROR_TYPE = Union[Parameter, TParameter]

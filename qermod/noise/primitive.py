@@ -13,12 +13,20 @@ from qermod.types import ERROR_TYPE, NoiseCategoryEnum
 class PrimitiveNoise(AbstractNoise):
     """
     Primitive noise represent elementary noise operations.
+
+    Attributes:
+        protocol (NoiseCategoryEnum): The type of protocol.
+        error_definition (ERROR_TYPE): Parameters defining the noise.
+        target (int | AbstractBlock | type[AbstractBlock] |
+            list[int | AbstractBlock | type[AbstractBlock]]): The targets
+            definition of the noise. Can be a qubit index, a type of qadence block,
+            or a qadence block instance.
     """
 
     protocol: NoiseCategoryEnum
     error_definition: ERROR_TYPE
-    target_gates: (
-        AbstractBlock | type[AbstractBlock] | list[AbstractBlock | type[AbstractBlock]]
+    target: (
+        int | AbstractBlock | type[AbstractBlock] | list[int | AbstractBlock | type[AbstractBlock]]
     ) = list()
 
     @field_validator("error_definition", mode="before")

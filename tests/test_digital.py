@@ -17,18 +17,26 @@ digital_noises = Noise.DIGITAL.list()
 
 def test_initialization_target_gates() -> None:
     noise = Bitflip(error_definition=0.1)
-    assert not noise.target_gates
+    assert not noise.target
 
-    noise = Bitflip(error_definition=0.1, target_gates=X)
-    assert noise.target_gates == X
+    noise = Bitflip(error_definition=0.1, target=0)
+    assert noise.target == 0
 
-    noise = Bitflip(error_definition=0.1, target_gates=Y(0))
-    assert noise.target_gates == Y(0)
+    targets = [0, 1]
+    noise = Bitflip(error_definition=0.1, target=targets)
+    for i in range(2):
+        assert noise.target[i] == targets[i]  # type:ignore[index]
+
+    noise = Bitflip(error_definition=0.1, target=X)
+    assert noise.target == X
+
+    noise = Bitflip(error_definition=0.1, target=Y(0))
+    assert noise.target == Y(0)
 
     targets = [X, Y(0)]
-    noise = Bitflip(error_definition=0.1, target_gates=targets)
+    noise = Bitflip(error_definition=0.1, target=targets)
     for i in range(2):
-        assert noise.target_gates[i] == targets[i]
+        assert noise.target[i] == targets[i]  # type:ignore[index]
 
 
 @pytest.mark.parametrize("noise_config", digital_noises)

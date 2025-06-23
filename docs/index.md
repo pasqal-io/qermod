@@ -101,13 +101,14 @@ assert noise == noise_serial
 ```
 
 
-## Specifying target gates
+## Specifying target gates or qubits
 
-To specify a gate can only act on a type of gates or set of gates, we need to specify the `target_gates` attribute:
+To specify that a noise can only act on a type of gates, set of gates, or qubits, we need to specify the `target` attribute:
 
 ```python exec="on" source="material-block" session="noise" result="json"
 from qadence import X, Y
-noise = Bitflip(error_definition=0.1, target_gates=[X, Y(0)]) # any gate of type X or any Y applied on qubit 0
+noise = Bitflip(error_definition=0.1, target=[X, Y(0)]) # any gate of type X or any Y applied on qubit 0
+noise2 = Bitflip(error_definition=0.1, target=[0, 1]) # applied on qubit 0 and 1
 ```
 
 ## Filtering

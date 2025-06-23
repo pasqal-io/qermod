@@ -6,61 +6,61 @@ from pydantic import Field
 from pyqtorch.noise.readout import WhiteNoise
 
 from qermod.noise import PrimitiveNoise
-from qermod.types import Noise, NoiseSubType
+from qermod.types import Noise, NoiseType
 
 
 class Bitflip(PrimitiveNoise):
     """The Bitflip noise."""
 
-    protocol: NoiseSubType = Field(default=Noise.DIGITAL.BITFLIP, frozen=True)
+    protocol: NoiseType = Field(default=Noise.DIGITAL.BITFLIP, frozen=True)
 
 
 class Phaseflip(PrimitiveNoise):
     """The Phaseflip noise."""
 
-    protocol: NoiseSubType = Field(default=Noise.DIGITAL.PHASEFLIP, frozen=True)
+    protocol: NoiseType = Field(default=Noise.DIGITAL.PHASEFLIP, frozen=True)
 
 
 class PauliChannel(PrimitiveNoise):
     """The PauliChannel noise."""
 
-    protocol: NoiseSubType = Field(default=Noise.DIGITAL.PAULI_CHANNEL, frozen=True)
+    protocol: NoiseType = Field(default=Noise.DIGITAL.PAULI_CHANNEL, frozen=True)
 
 
 class AmplitudeDamping(PrimitiveNoise):
     """The AmplitudeDamping noise."""
 
-    protocol: NoiseSubType = Field(default=Noise.DIGITAL.AMPLITUDE_DAMPING, frozen=True)
+    protocol: NoiseType = Field(default=Noise.DIGITAL.AMPLITUDE_DAMPING, frozen=True)
 
 
 class PhaseDamping(PrimitiveNoise):
     """The PhaseDamping noise."""
 
-    protocol: NoiseSubType = Field(default=Noise.DIGITAL.PHASE_DAMPING, frozen=True)
+    protocol: NoiseType = Field(default=Noise.DIGITAL.PHASE_DAMPING, frozen=True)
 
 
 class DigitalDepolarizing(PrimitiveNoise):
     """The DigitalDepolarizing noise."""
 
-    protocol: NoiseSubType = Field(default=Noise.DIGITAL.DEPOLARIZING, frozen=True)
+    protocol: NoiseType = Field(default=Noise.DIGITAL.DEPOLARIZING, frozen=True)
 
 
 class GeneralizedAmplitudeDamping(PrimitiveNoise):
     """The GeneralizedAmplitudeDamping noise."""
 
-    protocol: NoiseSubType = Field(default=Noise.DIGITAL.GENERALIZED_AMPLITUDE_DAMPING, frozen=True)
+    protocol: NoiseType = Field(default=Noise.DIGITAL.GENERALIZED_AMPLITUDE_DAMPING, frozen=True)
 
 
 class AnalogDepolarizing(PrimitiveNoise):
     """The AnalogDepolarizing noise."""
 
-    protocol: NoiseSubType = Field(default=Noise.ANALOG.DEPOLARIZING, frozen=True)
+    protocol: NoiseType = Field(default=Noise.ANALOG.DEPOLARIZING, frozen=True)
 
 
 class Dephasing(PrimitiveNoise):
     """The Dephasing noise."""
 
-    protocol: NoiseSubType = Field(default=Noise.ANALOG.DEPHASING, frozen=True)
+    protocol: NoiseType = Field(default=Noise.ANALOG.DEPHASING, frozen=True)
 
 
 class IndependentReadout(PrimitiveNoise):
@@ -69,7 +69,7 @@ class IndependentReadout(PrimitiveNoise):
     Note we can pass a confusion matrix via the `error_definition` argument.
     """
 
-    protocol: NoiseSubType = Field(default=Noise.READOUT.INDEPENDENT, frozen=True)
+    protocol: NoiseType = Field(default=Noise.READOUT.INDEPENDENT, frozen=True)
     seed: int | None = None
     noise_distribution: Optional[WhiteNoise] = None
 
@@ -80,5 +80,5 @@ class CorrelatedReadout(PrimitiveNoise):
     Note a confusion matrix should be passed via the `error_definition` argument.
     """
 
-    protocol: NoiseSubType = Field(default=Noise.READOUT.CORRELATED, frozen=True)
+    protocol: NoiseType = Field(default=Noise.READOUT.CORRELATED, frozen=True)
     seed: Optional[int] = None

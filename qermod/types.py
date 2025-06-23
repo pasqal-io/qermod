@@ -37,5 +37,5 @@ class Noise:
     """Noise applied to digital blocks."""
 
 
-NoiseSubType = Union[DigitalNoise, AnalogNoise, ReadoutNoise]
+NoiseType = Union[DigitalNoise, AnalogNoise, ReadoutNoise]
 ERROR_TYPE = Union[Parameter, TParameter]

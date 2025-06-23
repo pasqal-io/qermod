@@ -6,13 +6,13 @@ from qadence import X, Y
 from qermod import (
     AnalogDepolarizing,
     Bitflip,
-    NoiseCategory,
+    Noise,
     PrimitiveNoise,
     deserialize,
     serialize,
 )
 
-list_noises = [noise for noise in NoiseCategory.DIGITAL]
+digital_noises = Noise.DIGITAL.list()
 
 
 def test_initialization_target_gates() -> None:
@@ -39,13 +39,9 @@ def test_initialization_target_gates() -> None:
         assert noise.target[i] == targets[i]  # type:ignore[index]
 
 
-def test_serialization() -> None:
-    noise = Bitflip(error_definition=0.1)
-    noise_serial = deserialize(serialize(noise))
-
-    assert noise == noise_serial
-
-    noise = PrimitiveNoise(protocol=NoiseCategory.DIGITAL.BITFLIP, error_definition=0.1)
+@pytest.mark.parametrize("noise_config", digital_noises)
+def test_serialization(noise_config: Noise.DIGITAL) -> None:
+    noise = PrimitiveNoise(protocol=noise_config, error_definition=0.1)
     noise_serial = deserialize(serialize(noise))
 
     assert noise == noise_serial
@@ -63,12 +59,12 @@ def test_noise_instance_model_validation() -> None:
 @pytest.mark.parametrize(
     "noise_config",
     [
-        [NoiseCategory.READOUT.INDEPENDENT],
-        [NoiseCategory.DIGITAL.BITFLIP],
-        [NoiseCategory.DIGITAL.BITFLIP, NoiseCategory.DIGITAL.PHASEFLIP],
+        [Noise.READOUT.INDEPENDENT],
+        [Noise.DIGITAL.BITFLIP],
+        [Noise.DIGITAL.BITFLIP, Noise.DIGITAL.PHASEFLIP],
     ],
 )
-def test_append(noise_config: list[NoiseCategory]) -> None:
+def test_append(noise_config: list[Noise]) -> None:
     noise = Bitflip(error_definition=0.1)
 
     len_noise_config = len(noise_config)

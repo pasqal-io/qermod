@@ -26,7 +26,7 @@ class ReadoutNoise(StrEnum):
 
 
 @dataclass
-class NoiseCategory:
+class Noise:
     """Type of noise protocol."""
 
     ANALOG = AnalogNoise
@@ -37,5 +37,5 @@ class NoiseCategory:
     """Noise applied to digital blocks."""
 
 
-NoiseCategoryEnum = Union[DigitalNoise, AnalogNoise, ReadoutNoise]
+NoiseType = Union[DigitalNoise, AnalogNoise, ReadoutNoise]
 ERROR_TYPE = Union[Parameter, TParameter]

@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from abc import ABC
+from abc import ABC, abstractmethod
 
 from pydantic import BaseModel, ConfigDict
+
+from qermod.types import Noise, NoiseType
 
 # to handle torch Tensor
 BaseModel.model_config["arbitrary_types_allowed"] = True
@@ -33,3 +35,15 @@ class AbstractNoise(ABC, BaseModel):
             *self.blocks if isinstance(self, CompositeNoise) else (self,),
             *other.blocks if isinstance(other, CompositeNoise) else (other,),
         )
+
+    @abstractmethod
+    def filter(self, noise_type: type[Noise] | NoiseType) -> list[AbstractNoise]:
+        """Filter by `noise_type`.
+
+        Args:
+            noise_type (type[Noise] | NoiseSubType): Type of noise to keep.
+
+        Returns:
+            list[AbstractNoise]: Filtered noise with `noise_type`.
+        """
+        pass
